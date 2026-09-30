@@ -1,0 +1,70 @@
+﻿version: "3.8"
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: skillbridge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-skillbridge_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - skillbridge_pgdata:/var/lib/postgresql/data
+      - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillbridge-net
+
+  # 2. SkillBridge Backend & API Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillbridge-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-skillbridge_db}
+      JWT_SECRET: ${JWT_SECRET:-skillbridge_sih26134_super_secure_jwt_secret_key_2026}
+      CLIENT_URL: http://localhost:5174
+    ports:
+      - "5000:5000"
+    networks:
+      - skillbridge-net
+
+  # 3. Frontend Development Service (Optional standalone Vite server)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: skillbridge-frontend
+    restart: unless-stopped
+    ports:
+      - "5174:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+    depends_on:
+      - backend
+    networks:
+      - skillbridge-net
+
+volumes:
+  skillbridge_pgdata:
+    driver: local
+
+networks:
+  skillbridge-net:
+    driver: bridge

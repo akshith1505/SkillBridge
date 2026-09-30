@@ -1,0 +1,25 @@
+{
+  "name": "industry-skill-alignment-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SIH26134 SkillBridge - AI Industry Skill Alignment Platform",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "npm run dev --prefix frontend",
+    "client": "npm run dev --prefix frontend",
+    "server": "node backend/server.js",
+    "db:migrate": "node backend/db/migrate.js",
+    "db:seed": "node backend/db/seed.js",
+    "seed:large": "node backend/db/seedLargeScale.js",
+    "build": "npm run build --prefix frontend",
+    "preview": "npm run preview --prefix frontend",
+    "lint": "npm run lint --prefix frontend",
+    "test:p9": "node test_phase9.js",
+    "test:p10": "node test_phase10.js",
+    "test:p11": "node test_phase11.js",
+    "test:all": "node test_phase9.js && node test_phase10.js && node test_phase11.js"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.18.3"
+  }
+}

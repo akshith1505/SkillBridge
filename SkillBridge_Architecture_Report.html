@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillBridge - Technical Analysis & System Architecture</title>
+  <!-- Mermaid.js for dynamic SVG diagram rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+  </script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --surface: #ffffff;
+      --background: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #10b981;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 2.5rem 2rem;
+      border-bottom: 4px solid var(--primary);
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .header-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      margin: 0.2rem 0;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .subtitle {
+      color: #94a3b8;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .btn-print {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.4rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-print:hover {
+      background: var(--primary-dark);
+    }
+    .card {
+      background: var(--surface);
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.35rem;
+      color: #1e293b;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .diagram-container {
+      background: #fdfdfd;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin: 1.25rem 0;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: #334155;
+    }
+    tr:nth-child(even) {
+      background-color: #fcfcfd;
+    }
+    .formula-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1rem 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95rem;
+      color: #1e3a8a;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .stat-pill {
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    @media print {
+      body { background: white; }
+      .btn-print { display: none; }
+      .header { padding: 1.5rem 1rem; }
+      .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-content">
+      <div>
+        <div class="badge">Architecture & Technical Audit</div>
+        <h1>SkillBridge Platform Analysis</h1>
+        <p class="subtitle">AI Tools, Mathematical Algorithms, APIs & Architecture Documentation</p>
+      </div>
+      <div>
+        <button class="btn-print" onclick="window.print()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print / Save as PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Section 1: High-Level Architecture -->
+    <div class="card">
+      <h2>1. Platform High-Level Architecture</h2>
+      <p>SkillBridge is an end-to-end alignment platform connecting 4 key stakeholder ecosystems with a central hybrid AI & streaming backend.</p>
+      <div class="diagram-container">
+        <div class="mermaid">
+graph TB
+    subgraph Clients["Frontend Portals (React 19 + Vite 8)"]
+        S["Student Portal"]
+        E["Employer Portal"]
+        I["Institute Portal"]
+        G["Government Portal"]
+    end
+
+    subgraph Gateway["Backend Gateway (Node.js + Express 4.21)"]
+        AUTH["Auth & RBAC (JWT + Bcrypt)"]
+        REST["10x Modular REST Route Modules"]
+        SSE["EventBus (Server-Sent Events)"]
+    end
+
+    subgraph AIEngine["Hybrid AI & Intelligence Engine"]
+        LOCAL["Explainable Heuristics Engine (Offline / 0ms)"]
+        CLOUD["Cloud Adapter (Gemini 1.5 Pro / GPT-4o)"]
+        SCORE["Multi-Factor Scoring & Demand Forecaster"]
+    end
+
+    subgraph Storage["Persistence Layer"]
+        PG[("PostgreSQL 14+ (14 Relational Tables)")]
+        MEM[("Zero-Downtime Memory Store (Auto-Fallback)")]
+    end
+
+    subgraph External["External Integrations"]
+        LC["LeetCode / HackerRank Coding Challenges"]
+        AI_EXT["Google / OpenAI APIs (Optional)"]
+    end
+
+    Clients <--> Gateway
+    Gateway <--> AIEngine
+    Gateway --> Storage
+    PG -.->|Failover| MEM
+    AIEngine -.-> AI_EXT
+    S -.-> LC
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: AI Tools & Engines -->
+    <div class="card">
+      <h2>2. AI Tools, Models & Mathematical Algorithms</h2>
+      <p>The platform implements a pluggable AI architecture with strict mathematical immutability (LLMs cannot hallucinate or alter computed scores).</p>
+      
+      <div class="diagram-container">
+        <div class="mermaid">
+flowchart LR
+    REQ[Client Request] --> PROV{AI_PROVIDER Mode?}
+    
+    PROV -->|none (Default)| LOCAL["Local Heuristics Engine<br/>• 100% Offline<br/>• 0ms Latency<br/>• Zero Cost"]
+    PROV -->|gemini| GEMINI["Google Gemini 1.5 Pro<br/>• Contextual Guidance"]
+    PROV -->|openai| OPENAI["OpenAI GPT-4o<br/>• Career Guidance"]
+
+    GEMINI -->|Timeout > 5s or Error| LOCAL
+    OPENAI -->|Timeout > 5s or Error| LOCAL
+    
+    LOCAL --> RES[Sanitized Response]
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h3>Readiness Score Formula</h3>
+          <div class="formula-box">
+            Readiness = 0.35*Skills + 0.20*Assessments + 0.15*Career + 0.15*Market + 0.10*Projects + 0.05*SoftSkills
+          </div>
+          <ul>
+            <li><strong>35% Core Skills:</strong> Jaccard-weighted overlap of verified skills.</li>
+            <li><strong>20% Assessments:</strong> In-app diagnostic tests & verified LeetCode problems.</li>
+            <li><strong>15% Market Alignment:</strong> Frequency match across active database job requisitions.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Prioritized Learning Gap Formula</h3>
+          <div class="formula-box">
+            Priority = SkillGap × IndustryDemand(1-5) × RoleImportance(1-5)
+          </div>
+          <ul>
+            <li><strong>6-Factor Job Fit:</strong> 50% Skills, 20% Role, 10% Exp, 10% Location, 5% Mode, 5% Salary.</li>
+            <li><strong>Demand Forecaster:</strong> Flags Critical Shortage (>30% growth, >40% deficit).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: APIs Breakdown -->
+    <div class="card">
+      <h2>3. APIs Used in the Platform</h2>
+      <div class="diagram-container">
+        <div class="mermaid">
+graph TD
+    API["SkillBridge API Gateway (Port 5000)"]
+
+    API --> AUTH["/api/auth (Login, Register, OTP, Me)"]
+    API --> STU["/api/students (Profile, Skills, Roadmap, AI Analysis)"]
+    API --> ASS["/api/assessments (Quizzes, History, Challenge Verify)"]
+    API --> JOB["/api/jobs (Listings, 6-Factor Fit Matching)"]
+    API --> EMP["/api/employers (Candidate Ranking, Vacancies)"]
+    API --> INS["/api/institutes (Curriculum Matrix, Batch Readiness)"]
+    API --> GOV["/api/government (Regional Deficit, Subsidies)"]
+    API --> INT["/api/intelligence (Unified Cross-Portal Metrics)"]
+    API --> SSE_R["/api/events (Real-Time Server-Sent Events)"]
+    API --> HLT["/api/health (Uptime, Memory, DB Status)"]
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Route Module</th>
+            <th>HTTP Methods</th>
+            <th>Capabilities & Responsibilities</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/api/auth</code></td>
+            <td><code>POST, GET</code></td>
+            <td>Registration, login, password reset OTP, JWT payload verification.</td>
+          </tr>
+          <tr>
+            <td><code>/api/students</code></td>
+            <td><code>GET, POST, PUT</code></td>
+            <td>Profile management, verified badges, roadmap milestones, AI situation guide.</td>
+          </tr>
+          <tr>
+            <td><code>/api/assessments</code></td>
+            <td><code>GET, POST</code></td>
+            <td>Diagnostic quiz questions, submission evaluation, LeetCode verification.</td>
+          </tr>
+          <tr>
+            <td><code>/api/jobs</code></td>
+            <td><code>GET, POST</code></td>
+            <td>Role filtering, vacancy posting, multi-factor candidate match scoring.</td>
+          </tr>
+          <tr>
+            <td><code>/api/employers</code></td>
+            <td><code>GET, POST</code></td>
+            <td>Organizational profile, AI-ranked applicant pool, hiring metrics.</td>
+          </tr>
+          <tr>
+            <td><code>/api/institutes</code></td>
+            <td><code>GET, POST</code></td>
+            <td>Curriculum gap matrix, batch placement readiness, bridge training cohorts.</td>
+          </tr>
+          <tr>
+            <td><code>/api/government</code></td>
+            <td><code>GET, POST</code></td>
+            <td>Regional deficit heatmap, 12-to-24 month forecast, policy subsidy allocations.</td>
+          </tr>
+          <tr>
+            <td><code>/api/intelligence</code></td>
+            <td><code>GET</code></td>
+            <td>Unified cross-portal alignment pipeline, National Employability Index (76.4%).</td>
+          </tr>
+          <tr>
+            <td><code>/api/events</code></td>
+            <td><code>GET (SSE)</code></td>
+            <td>Real-time Server-Sent Events stream for instant cross-tab live updates.</td>
+          </tr>
+          <tr>
+            <td><code>/api/health</code></td>
+            <td><code>GET</code></td>
+            <td>PostgreSQL connectivity, memory usage, uptime, service diagnostic probe.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 4: Cross-Portal Flow -->
+    <div class="card">
+      <h2>4. Cross-Portal Coordination Flow</h2>
+      <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Emp as Employer
+    participant Intel as Intelligence Engine
+    actor Inst as Institute
+    actor Stud as Student
+    actor Gov as Government
+
+    Emp->>Intel: Posts Job Requirements (Skills & Weights)
+    Intel->>Gov: Flags Regional Skill Deficits
+    Gov->>Inst: Allocates Training Subsidies & Grants
+    Inst->>Stud: Launches Bridge Training Courses
+    Stud->>Intel: Takes Diagnostic Quizzes & Verifies Challenges
+    Intel->>Emp: Recommends AI-Ranked Placement-Ready Candidates
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Tech Stack -->
+    <div class="card">
+      <h2>5. Technology Stack Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Technology</th>
+            <th>Highlights</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Frontend</strong></td>
+            <td>React 19, Vite 8, React Router 7</td>
+            <td>SPA with glassmorphism UI, zero-dependency SVG charts</td>
+          </tr>
+          <tr>
+            <td><strong>Backend</strong></td>
+            <td>Node.js, Express 4.21</td>
+            <td>ES Modules, SSE streaming, Helmet security, rate limiting</td>
+          </tr>
+          <tr>
+            <td><strong>AI Layer</strong></td>
+            <td>Local Rule Heuristics, Google Gemini, OpenAI</td>
+            <td>Pluggable adapter with 5s timeout & offline fallback</td>
+          </tr>
+          <tr>
+            <td><strong>Database</strong></td>
+            <td>PostgreSQL 14+ with In-Memory Store</td>
+            <td>14 normalized tables, auto-fallback for 100% offline uptime</td>
+          </tr>
+          <tr>
+            <td><strong>Integrations</strong></td>
+            <td>LeetCode, HackerRank</td>
+            <td>In-app workspace with algorithmic blueprints & code templates</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>
